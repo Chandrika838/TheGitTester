@@ -1,53 +1,91 @@
 package automation.pages.utils;
 
-	import org.testng.ITestContext;
-	import org.testng.ITestListener;
-	import org.testng.ITestResult;
+import org.testng.ITestContext;
+import org.testng.ITestListener;
+import org.testng.ITestResult;
 
-	import com.aventstack.extentreports.ExtentReports;
-	import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
 
-	import automation.pages.utils.ExtentManager;
+public class ExtentListener implements ITestListener {
 
-	public class ExtentListener implements ITestListener {
+    private static ExtentReports extent =
+            ExtentManager.getReport();
 
-	    private static ExtentReports extent =
-	            ExtentManager.getReport();
+    private static ThreadLocal<ExtentTest> test =
+            new ThreadLocal<ExtentTest>();
 
-	    private static ThreadLocal<ExtentTest> test =
-	            new ThreadLocal<>();
 
-	    @Override
-	    public void onTestStart(ITestResult result) {
+    // Get the current test
+    public static ExtentTest getTest() {
+        return test.get();
+    }
 
-	        ExtentTest extentTest =
-	                extent.createTest(result.getMethod().getMethodName());
 
-	        test.set(extentTest);
-	    }
+    @Override
+    public void onTestStart(ITestResult result) {
 
-	    @Override
-	    public void onTestSuccess(ITestResult result) {
+        String testName =
+                result.getMethod().getMethodName();
 
-	        test.get().pass("Test Passed");
-	    }
+        String description =
+                result.getMethod().getDescription();
 
-	    @Override
-	    public void onTestFailure(ITestResult result) {
+        ExtentTest extentTest =
+                extent.createTest(testName);
 
-	        test.get().fail(result.getThrowable());
-	    }
+        test.set(extentTest);
 
-	    @Override
-	    public void onTestSkipped(ITestResult result) {
 
-	        test.get().skip("Test Skipped");
-	    }
+        // Test Scenario
+        if (description != null && !description.isEmpty()) {
 
-	    @Override
-	    public void onFinish(ITestContext context) {
+            extentTest.info(
+                    "<b>Test Scenario:</b><br>" +
+                    description
+            );
+        }
+    }
 
-	        extent.flush();
-	    }
-	}
 
+    @Override
+    public void onTestSuccess(ITestResult result) {
+
+        test.get().pass(
+                "<b>Test Result:</b> PASSED"
+        );
+    }
+
+
+    @Override
+    public void onTestFailure(ITestResult result) {
+
+        test.get().fail(
+                "<b>Test Result:</b> FAILED"
+        );
+
+        if (result.getThrowable() != null) {
+
+            test.get().fail(
+                    "<b>Failure Details:</b><br>" +
+                    result.getThrowable().getMessage()
+            );
+        }
+    }
+
+
+    @Override
+    public void onTestSkipped(ITestResult result) {
+
+        test.get().skip(
+                "<b>Test Result:</b> SKIPPED"
+        );
+    }
+
+
+    @Override
+    public void onFinish(ITestContext context) {
+
+        extent.flush();
+    }
+}

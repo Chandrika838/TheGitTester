@@ -1,9 +1,7 @@
-package adminpage;
+package com.mypc.automation.pages.pages.mypcpage;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-
-import base.BasePage;
 
 
 public class LoginPage extends BasePage {
@@ -24,8 +22,7 @@ public class LoginPage extends BasePage {
  
   private By loginButton = By.cssSelector("button.btn-login");
   
-  private By ErrorMessage = By.xpath("//span[@class='fa-solid fa-circle-xmark failCircle']");
-   
+  private By errormessage = By.xpath("//span[@class='fa-solid fa-circle-xmark failCircle']");
   // We are Methods
   
   public void enterEmail(String userEmail) {
@@ -91,25 +88,28 @@ public class LoginPage extends BasePage {
 		 
 		 return isDisplayed(loginButton);
 	 
-	
- }
+	 }
 	 
-public boolean isErrorMessageDisplayed() {
+
+public boolean isInvalidLoginMessageDisplayed() {
 	
-	return isDisplayed(ErrorMessage);
+	
+	return isDisplayed(errormessage);
 }
 
-
-public boolean isInvalidMessageDisplayed() {
-	
-	return isDisplayed(ErrorMessage);
-}
-
-
+ 
 public boolean isInvalidPasswordDisplayed() {
 	
-	return isDisplayed(ErrorMessage);
+	return isDisplayed(errormessage);
+	
 }
- 
+
+
+public boolean isBlankEmailDisplayed() {
+	
+	return isDisplayed(errormessage);
+	
+	
+}
  }
   
